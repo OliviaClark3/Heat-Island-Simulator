@@ -1,0 +1,43 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Test program</title>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+      #infoDiv {
+        position: absolute;
+        top: 65px;
+        left: 60px;
+      }
+    </style>
+
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.26/"></script>
+
+    <script src="./outcome.js"></script>
+    <!-- <script>
+      fetch('http://localhost:8000/api').then(res => res.json()).then(res => console.log(res));
+    </script> -->
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+    <div id="infoDiv"> 
+      <input
+        class="esri-component esri-widget--button esri-widget esri-interactive"
+        type="button"
+        id="getData"
+        value="Get Data"
+      />
+    </div>
+    
+  </body>
+</html>
