@@ -1,3 +1,5 @@
+// display with only trees added
+
 require([
     "esri/Map",
     "esri/views/SceneView",
@@ -18,8 +20,6 @@ require([
     "esri/smartMapping/renderers/heatmap"
   ], (Map, SceneView, FeatureLayer, WebStyleSymbol, Editor, reactiveUtils, Edits, UpdateWorkflow, Point, SketchViewModel, esriLang, esriConfig, WebScene, SceneLayer, Sketch, GraphicsLayer, heatmapRendererCreator) => {
 
-    // esriConfig.apiKey = "AAPKa07a324e95e9498bb1de9d702ae6a65fkX6C2FmCKj71uGcHeQne7esbI9_JXyE3836Tyf3JWmiBkvKK518ht8Xg8BwG8Vmq"
-
     const graphicsLayer = new GraphicsLayer({
       elevationInfo: {
         mode: "on-the-ground",
@@ -32,16 +32,17 @@ require([
     })
 
     const map = new Map({
-        basemap: "arcgis-topographic",
+        // basemap options: "satellite", "hybrid", "terrain", "oceans", "osm", "dark-gray-vector", "gray-vector", "streets-vector", "topo-vector", "streets-night-vector", "streets-relief-vector", "streets-navigation-vector"
+        basemap: "osm",
         ground: "world-elevation",
         layers: [graphicsLayer],
     })
 
-    const scene = new WebScene({
-        portalItem: {
-            id: "1391de91c243480f8ab34a3007e55a69"
-        }
-    })
+    // const scene = new WebScene({
+    //     portalItem: {
+    //         id: "1391de91c243480f8ab34a3007e55a69"
+    //     }
+    // })
     
   const view = new SceneView({
     container: "viewDiv",
@@ -134,12 +135,14 @@ require([
     //   },
   };
 
+  // let treeType = "Populus"
+
   const treeRenderer = {
     type: "simple",  // autocasts as new SimpleRenderer()
     symbol: {
       type: "web-style",  // autocasts as new WebStyleSymbol()
       styleName: "EsriRealisticTreesStyle",
-      name: "Eucalyptus"
+      name: "Populus"
     },
     label: "generic tree",
     visualVariables: [{
@@ -147,24 +150,7 @@ require([
       axis: "height",
       field: "Tree_H",
       valueUnit: "meters"
-    }, 
-    // {
-    //     type: "color",
-    //     field: "TYPE",
-    //     stops: [
-    //         {
-    //             value: "Tree",
-    //             color: "#31a354"
-    //         }
-    //     ]
-    // }
-    // {
-    //   type: "size",
-    //   axis: "width-and-depth",
-    //   field: "canopy_diameter",
-    //   valueUnit: "feet"
-    // }
-    ]
+    }]
   };
 
 
@@ -177,17 +163,50 @@ const buildingsLayer = new SceneLayer({
   map.add(buildingsLayer);
 
   // add trees
-  var treeLayer = new SceneLayer({
+  var treeLayer = new FeatureLayer({
     portalItem: {
         // id: "04be9f93876e48fab0b341b213a2c452"
-        id: "fd184dff273c497ea15df63f3e56c40f"
+        // id: "fd184dff273c497ea15df63f3e56c40f"
+        id: "72c9f18c98f047a2815972b9b1628a84"
     },
+    // url: "https://services.arcgis.com/hLRlshaEMEYQG5A8/arcgis/rest/services/HamiltonTreesWithRemovedFeatures/FeatureServer",
     renderer: treeRenderer,
     elevationInfo: {
       mode: "on-the-ground",
     },
   })
   // view.map.add(treeLayer)
+
+  const heatmapRenderer =  {
+    type: "unique-value",
+    field: "grid_code",
+    defaultSymbol: { type: "simple-marker" },
+    visualVariables: [{
+      type: "color",
+      field: "grid-code",
+      // stops: [
+      //   { value: 7, color: "rgba(255, 255, 255, 0)" },
+      //   { value: 8, color: "rgba(255, 255, 255, 1)" },
+      //   { value: 9, color: "rgba(255, 140, 0, 1)" },
+      //   { value: 10, color: "rgba(255, 140, 0, 1)" },
+      //   { value: 12, color: "rgba(255, 0, 0, 1)" }
+      // ],
+      stops: [
+        {value: 5, color: "rgba(255, 185, 80, 0)"},
+        {value: 6, color: "rgba(255, 173, 51, 1)"},
+        {value: 7, color: "rgba(255, 147, 31, 1)"},
+        {value: 8, color: "rgba(255, 126, 51, 1)"},
+        {value: 9, color: "rgba(250, 94, 31, 1)"},
+        {value: 10, color: "rgba(236, 63, 19, 1)"},
+        {value: 11, color: "rgba(184, 23, 2, 1)"},
+        {value: 12, color: "rgba(165, 1, 4, 1)"},
+        {value: 13, color: "rgba(142, 1, 3, 1)"},
+        {value: 14, color: "rgba(122, 1, 3, 1)"},
+      ],
+
+    }],
+    
+  }
   
   var serverlayer = new FeatureLayer({
         // portalItem: {id: "0c208681a2cc45008fda14d07ac0ae5f"},
@@ -314,8 +333,8 @@ const buildingsLayer = new SceneLayer({
   let numTempBuffers = 7    // number of radius (or diameter) buffers around tree for temp change
   let tempChange = 4;   // temperature change from middle of tree, used to calculate surrounding temperature change
 
-  document.querySelector("#treeImpactBuffer").value = numTempBuffers
-  document.querySelector("#treeCoolingTemperature").value = tempChange
+  // document.querySelector("#treeImpactBuffer").value = numTempBuffers
+  // document.querySelector("#treeCoolingTemperature").value = tempChange
 
   document.querySelector("#showBuffer").innerHTML = numTempBuffers
   document.querySelector("#showTemp").innerHTML = tempChange
@@ -398,15 +417,46 @@ const buildingsLayer = new SceneLayer({
 
   }
 
-
-  let updateValuesBtn = document.querySelector("#updateValues")
-  updateValuesBtn.addEventListener("click", (event) => {
-    console.log("update buffer")
-    numTempBuffers = parseInt(document.querySelector("#treeImpactBuffer").value)
-    tempChange = parseInt(document.querySelector("#treeCoolingTemperature").value)
+  let treeSelect = document.getElementById("selectTree")
+  treeSelect.addEventListener("change", (event) => {
+    let treeType
+    if (treeSelect.value == "Populus") {
+      console.log("Populus")
+      numTempBuffers = 7
+      tempChange = 4
+      treeType = "Populus"
+    } else if (treeSelect.value == "Tilia") {
+      console.log("Tilia")
+      numTempBuffers = 5
+      tempChange = 2
+      treeType = "Tilia"
+    } else if (treeSelect.value == "Eucalyptus") {
+      console.log("Eucalyptus")
+      numTempBuffers = 10
+      tempChange = 5
+      treeType = "Eucalyptus"
+    }
+    // update renderer
+    let newRenderer = treeClientLayer.renderer.clone()
+    newRenderer.symbol = {
+      type: "web-style",  // autocasts as new WebStyleSymbol()
+      styleName: "EsriRealisticTreesStyle",
+      name: treeType
+    }
+    treeClientLayer.renderer = newRenderer
     document.querySelector("#showBuffer").innerHTML = numTempBuffers
     document.querySelector("#showTemp").innerHTML = tempChange
   })
+
+
+  // let updateValuesBtn = document.querySelector("#updateValues")
+  // updateValuesBtn.addEventListener("click", (event) => {
+  //   console.log("update buffer")
+  //   numTempBuffers = parseInt(document.querySelector("#treeImpactBuffer").value)
+  //   tempChange = parseInt(document.querySelector("#treeCoolingTemperature").value)
+  //   document.querySelector("#showBuffer").innerHTML = numTempBuffers
+  //   document.querySelector("#showTemp").innerHTML = tempChange
+  // })
 
   // let tempUpdateBtn = document.querySelector("#updateTemperatureButton")
   // tempUpdateBtn.addEventListener("click", (event) => {
@@ -416,6 +466,39 @@ const buildingsLayer = new SceneLayer({
   // })
 
     
+  let treeBtn = document.querySelector("#addTrees")
+  treeBtn.addEventListener("click", (event) => {
+    console.log("adding trees")
+    // tree query
+    let treeQuery = treeLayer.createQuery();
+    treeQuery.geometry = view.toMap(event);  // the point location of the pointer
+    treeQuery.distance = 10;
+    treeQuery.units = "kilometers";
+    treeQuery.spatialRelationship = "intersects";  // this is the default
+    treeQuery.returnGeometry = true;
+    // console.log(treeQuery)
+    treeLayer.queryFeatures(treeQuery)
+    .then(function(response) {
+      console.log(response)
+      // for (let i = 0; i < response.features.length; i++) {
+      //   response.features[i].symbol =  {
+      //     type: "web-style",  // autocasts as new WebStyleSymbol()
+      //     styleName: "EsriRealisticTreesStyle",
+      //     name: "Unknown"
+      //   }
+      // }
+        const edits = {
+            addFeatures: response.features
+        }
+        treeClientLayer.applyEdits(edits).then(() => {
+          console.log("then")
+        })
+        console.log(treeClientLayer)
+    })
+  })
+  
+
+
     // let dataBtn = document.getElementById("getData")
     let dataBtn = document.querySelector("#getData")
     
@@ -429,6 +512,7 @@ const buildingsLayer = new SceneLayer({
       query.units = "meters";
       query.spatialRelationship = "intersects";  // this is the default
       query.returnGeometry = true;
+      query.maxRecordCountFactor = 5
       // console.log(query)
       serverlayer.queryFeatures(query)
       .then(function(response) {
@@ -447,54 +531,38 @@ const buildingsLayer = new SceneLayer({
           }
       })
 
-      // tree query
-      let treeQuery = treeLayer.createQuery();
-      treeQuery.geometry = view.toMap(event);  // the point location of the pointer
-      treeQuery.distance = 100;
-      treeQuery.units = "kilometers";
-      treeQuery.spatialRelationship = "intersects";  // this is the default
-      treeQuery.returnGeometry = true;
-      // console.log(treeQuery)
-      treeLayer.queryFeatures(treeQuery)
-      .then(function(response) {
-          const edits = {
-              addFeatures: response.features
-          }
-          treeClientLayer.applyEdits(edits)
-          console.log(treeClientLayer)
-      })
     })
 
     view.when(() => {
 
 
-      view.on("click", (event) => {
-        console.log("view click")
-        let query = serverlayer.createQuery();
-      // query.geometry = graphicsLayer.graphics.items[0].geometry
-      query.geometry = view.toMap(event);  // the point location of the pointer
-      query.distance = 1000;
-      query.units = "meters";
-      query.spatialRelationship = "intersects";  // this is the default
-      query.returnGeometry = true;
-      // console.log(query)
-      serverlayer.queryFeatures(query)
-      .then(function(response) {
-          const edits = {
-              addFeatures: response.features
-          }
-          clientlayer.applyEdits(edits)
-          console.log(clientlayer)
-          clientlayer.elevationInfo = {
-            mode: "absolute-height",
-            offset: 50,
-            // featureExpressionInfo: {
-            //     expression: "Geometry($feature).z * 10"
-            //   },
-            unit: "meters"
-          }
-      })
-      })
+      // view.on("click", (event) => {
+      //   console.log("view click")
+      //   let query = serverlayer.createQuery();
+      // // query.geometry = graphicsLayer.graphics.items[0].geometry
+      // query.geometry = view.toMap(event);  // the point location of the pointer
+      // query.distance = 1000;
+      // query.units = "meters";
+      // query.spatialRelationship = "intersects";  // this is the default
+      // query.returnGeometry = true;
+      // // console.log(query)
+      // serverlayer.queryFeatures(query)
+      // .then(function(response) {
+      //     const edits = {
+      //         addFeatures: response.features
+      //     }
+      //     clientlayer.applyEdits(edits)
+      //     console.log(clientlayer)
+      //     clientlayer.elevationInfo = {
+      //       mode: "absolute-height",
+      //       offset: 50,
+      //       // featureExpressionInfo: {
+      //       //     expression: "Geometry($feature).z * 10"
+      //       //   },
+      //       unit: "meters"
+      //     }
+      // })
+      // })
 
 
 
@@ -569,6 +637,7 @@ const buildingsLayer = new SceneLayer({
         } else if (state == "creating-features") {
           console.log("new tree")
           console.log(editor)
+          // editor.viewModel.SketchViewModel.createGraphic.symbolLayers[0].height = 7
           // prevState = currState
           // currState = state
           selectedFeature = null
@@ -577,7 +646,8 @@ const buildingsLayer = new SceneLayer({
           editor.viewModel.featureFormViewModel.watch("feature", (feature) => {
             console.log("feature set")
             console.log(feature)
-            feature.attributes.Tree_Height = String(feature.attributes.Tree_H)
+            feature.attributes.Tree_H = 7.0
+            // feature.attributes.Tree_Height = String(feature.attributes.Tree_H)
 
             selectedFeature = feature
             selectedFeatureCopy = esriLang.clone(feature)
@@ -586,7 +656,6 @@ const buildingsLayer = new SceneLayer({
           editor.activeWorkflow.on("commit", (f) => {
             console.log("commit")
             // console.log(f)
-
             updateTreeSurround(selectedFeature, "cooler")
 
 
@@ -597,11 +666,11 @@ const buildingsLayer = new SceneLayer({
     })
 
 
-      view.watch("scale", (scale) => {
-        console.log("scale")
-        console.log(scale)
-        // console.log(view.)
-      })
+      // view.watch("scale", (scale) => {
+      //   console.log("scale")
+      //   console.log(scale)
+      //   // console.log(view.)
+      // })
 
     });  
 
