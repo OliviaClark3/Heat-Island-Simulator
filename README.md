@@ -2,13 +2,19 @@
 
 If prompted to sign in, you can sign in with your eagle labs account
 
-To add trees to the map, click the Add Trees button at the top left of the page
+To get everything to display correctly, you must do the following steps in the order below, otherwise it will break
 
-To add heat islands to the map
-- select the Draw a Point tool the the Sketch Widget in the bottom right
-- place the point on the map
-- click the Query Area button on the top left
-- It may take a few seconds for the points to display
+Before adding any trees or heat islands to the map, you must place a point on the map using the Sketch Widget in the bottom right. Only the first point you make with this will do anything
+
+Add the heat islands to the map by clicking the Query Area button in the top left
+
+Add the trees to the map by clicking the Add Trees button in the top left
+
+Open the console and wait for it to stop outputing, once it stops then all the data is loaded
+
+You can probably start editing before it is done, but the heat island data will still be getting updated from the existing trees at the same time
+
+
 
 Use the Select tool in the Editor Widget to move trees
 
@@ -18,4 +24,4 @@ Do not use the New Feature tool with the circle next to it
 
 Changing the Tree Type also changes the radius that the heat islands are impacted and the starting cooling temperature
 
-The submit changes button does nothing
+The Submit Changes button does nothing
