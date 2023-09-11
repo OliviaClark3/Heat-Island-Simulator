@@ -712,11 +712,11 @@ const buildingsLayer = new SceneLayer({
     })
 
 
-      view.watch("scale", (scale) => {
-        console.log("scale")
-        console.log(scale)
-        // console.log(view.)
-      })
+      // view.watch("scale", (scale) => {
+      //   console.log("scale")
+      //   console.log(scale)
+      //   // console.log(view.)
+      // })
 
     });  
 
