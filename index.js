@@ -408,7 +408,10 @@ const buildingsLayer = new SceneLayer({
 
         clientlayer.applyEdits(edits)
             .then(function(result) {
-                console.log("applyEdits success")
+                // if (j == oldSpotFeatures.length - 1) {
+                //   console.log("applyEdits success")
+                // }
+                // console.log("applyEdits success")
                 // console.log("oldpos clientlayer applyEdits success:", result, i);
                 // console.log("added initial pos")
                 // console.log(initialPos)

@@ -10,11 +10,9 @@ Add the heat islands to the map by clicking the Query Area button in the top lef
 
 Add the trees to the map by clicking the Add Trees button in the top left
 
-Open the console and wait for it to stop outputing, once it stops then all the data is loaded
+You may have to wait up to about 10 seconds after the trees appear for the heat island data to update for the existing trees. New trees will be faster
 
-You can probably start editing before it is done, but the heat island data will still be getting updated from the existing trees at the same time
-
-
+------------------------------------------------------------------------------
 
 Use the Select tool in the Editor Widget to move trees
 
@@ -22,6 +20,6 @@ Use the New Feature tool with the tree symbol next to it to create new tree feat
 
 Do not use the New Feature tool with the circle next to it
 
-Changing the Tree Type also changes the radius that the heat islands are impacted and the starting cooling temperature
+Changing the Tree Type also changes the radius that the heat islands are impacted and the starting cooling temperature (although I think this might not be working properly, not important for demo though)
 
 The Submit Changes button does nothing
