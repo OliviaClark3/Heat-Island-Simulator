@@ -64,21 +64,29 @@ require([
   // const colors = ["rgba(115, 0, 115, 0)", "#820082", "#910091", "#a000a0", "#af00af", "#c300c3", "#d700d7", "#eb00eb", "#ff00ff", "#ff58a0", "#ff896b", "#ffb935", "#ffea00"];
   // const colors = ["#EAF0F7", "#D7E1EE", "#CBD6E4", "#BFCBDB", "#B3BFD1", "#A7B4C7", "#A4A2A8", "#DF8879", "#C86558", "#B04238", "#991F17", "#8A150D", "#6B0B04"];
   // const colors = ["rgba(255, 185, 80, 0)", "#820082", "#910091", "#a000a0", "#af00af", "#c300c3", "#d700d7", "#eb00eb", "#ff00ff", "#ff58a0", "#ff896b", "#ffb935", "#ffea00"]
+  // const colors = ["rgba(122, 1, 3, 0)", "rgba(142, 1, 3, 1)", "rgba(165, 1, 4, 1)", "rgba(184, 23, 2, 1)", "rgba(236, 63, 19, 1)", "rgba(250, 94, 31, 1)", "rgba(255, 126, 51, 1)", "rgba(255, 147, 31, 1)", "rgba(255, 173, 51, 1)", "rgba(255, 185, 80, 1)"]
 
   let renderer = {
     type: "heatmap",
-    field: "grid_code",
-    colorStops: [
-      { ratio: 0, color: "rgba(255, 255, 255, 0)" },
-      { ratio: 0.2, color: "rgba(255, 255, 255, 1)" },
-      { ratio: 0.5, color: "rgba(255, 140, 0, 1)" },
-      { ratio: 0.8, color: "rgba(255, 140, 0, 1)" },
-      { ratio: 1, color: "rgba(255, 0, 0, 1)" }
-    ],
+    field: "heat",
+    // colorStops: [
+    //   { ratio: 0, color: "rgba(255, 255, 255, 0)" },
+    //   { ratio: 0.2, color: "rgba(255, 255, 255, 1)" },
+    //   { ratio: 0.5, color: "rgba(255, 140, 0, 1)" },
+    //   { ratio: 0.8, color: "rgba(255, 140, 0, 1)" },
+    //   { ratio: 1, color: "rgba(255, 0, 0, 1)" }
+    // ],
+    // colorStops: [
+    //   { ratio: 0, color: "rgba(255, 0, 0, 0)" },
+    //   { ratio: 0.2, color: "rgba(255, 140, 0, 1)" },
+    //   { ratio: 0.5, color: "rgba(255, 140, 0, 1)" },
+    //   { ratio: 0.8, color: "rgba(255, 255, 255, 1)" },
+    //   { ratio: 1, color: "rgba(255, 255, 255, 0)" }
+    // ],
     minDensity: 0,
     maxDensity: 0.04625,
     radius: 18,
-    referenceScale: 1200
+    // referenceScale: 1200
     // colorStops: [
     //   { color: colors[0], ratio: 0 },
     //   { color: colors[1], ratio: 0.083 },
@@ -95,6 +103,19 @@ require([
     //   { color: colors[12], ratio: 1 }
     // ],
     // colorStops: [
+    //   { color: colors[0], ratio: 0 },
+    //   { color: colors[1], ratio: 0.11 },
+    //   { color: colors[2], ratio: 0.22 },
+    //   { color: colors[3], ratio: 0.33 },
+    //   { color: colors[4], ratio: 0.44 },
+    //   { color: colors[5], ratio: 0.55 },
+    //   { color: colors[6], ratio: 0.66 },
+    //   { color: colors[7], ratio: 0.77 },
+    //   { color: colors[8], ratio: 0.88 },
+    //   { color: colors[9], ratio: 0.99 },
+    //   { color: colors[10], ratio: 1 }
+    // ],
+    // colorStops: [
       // { ratio: 0, color: "rgba(255, 0, 0, 1)" },
       // { ratio: 0.2, color: "rgba(255, 140, 0, 1)" },
       // { ratio: 0.5, color: "rgba(255, 140, 0, 1)" },
@@ -109,19 +130,19 @@ require([
       // { ratio: 0.8, color: "rgba(255, 50, 0, 1)" },
       // { ratio: 1, color: "rgba(255, 0, 0, 1)" }
     // ],
-    // colorStops: [
-    //   {ratio: 0, color: "rgba(255, 185, 80, 0)"},
-    //   {ratio: 0.11, color: "rgba(255, 173, 51, 1)"},
-    //   {ratio: 0.22, color: "rgba(255, 147, 31, 1)"},
-    //   {ratio: 0.33, color: "rgba(255, 126, 51, 1)"},
-    //   {ratio: 0.44, color: "rgba(250, 94, 31, 1)"},
-    //   {ratio: 0.55, color: "rgba(236, 63, 19, 1)"},
-    //   {ratio: 0.66, color: "rgba(184, 23, 2, 1)"},
-    //   {ratio: 0.77, color: "rgba(165, 1, 4, 1)"},
-    //   {ratio: 0.88, color: "rgba(142, 1, 3, 1)"},
-    //   {ratio: 1, color: "rgba(122, 1, 3, 1)"},
-    // ],
-    // // referenceScale: 1100,
+    colorStops: [
+      {ratio: 0, color: "rgba(255, 185, 80, 0)"},
+      {ratio: 0.11, color: "rgba(255, 173, 51, 1)"},
+      {ratio: 0.22, color: "rgba(255, 147, 31, 1)"},
+      {ratio: 0.33, color: "rgba(255, 126, 51, 1)"},
+      {ratio: 0.44, color: "rgba(250, 94, 31, 1)"},
+      {ratio: 0.55, color: "rgba(236, 63, 19, 1)"},
+      {ratio: 0.66, color: "rgba(184, 23, 2, 1)"},
+      {ratio: 0.77, color: "rgba(165, 1, 4, 1)"},
+      {ratio: 0.88, color: "rgba(142, 1, 3, 1)"},
+      {ratio: 1, color: "rgba(122, 1, 3, 1)"},
+    ],
+    referenceScale: 250,
     // // radius: 2.5,
     // maxDensity: 6,
     // minDensity: 0,
@@ -177,45 +198,49 @@ const buildingsLayer = new SceneLayer({
   })
   // view.map.add(treeLayer)
 
-  const heatmapRenderer =  {
-    type: "unique-value",
-    field: "grid_code",
-    defaultSymbol: { type: "simple-marker" },
-    visualVariables: [{
-      type: "color",
-      field: "grid-code",
-      // stops: [
-      //   { value: 7, color: "rgba(255, 255, 255, 0)" },
-      //   { value: 8, color: "rgba(255, 255, 255, 1)" },
-      //   { value: 9, color: "rgba(255, 140, 0, 1)" },
-      //   { value: 10, color: "rgba(255, 140, 0, 1)" },
-      //   { value: 12, color: "rgba(255, 0, 0, 1)" }
-      // ],
-      stops: [
-        {value: 5, color: "rgba(255, 185, 80, 0)"},
-        {value: 6, color: "rgba(255, 173, 51, 1)"},
-        {value: 7, color: "rgba(255, 147, 31, 1)"},
-        {value: 8, color: "rgba(255, 126, 51, 1)"},
-        {value: 9, color: "rgba(250, 94, 31, 1)"},
-        {value: 10, color: "rgba(236, 63, 19, 1)"},
-        {value: 11, color: "rgba(184, 23, 2, 1)"},
-        {value: 12, color: "rgba(165, 1, 4, 1)"},
-        {value: 13, color: "rgba(142, 1, 3, 1)"},
-        {value: 14, color: "rgba(122, 1, 3, 1)"},
-      ],
+  // const heatmapRenderer =  {
+  //   type: "unique-value",
+  //   field: "MERGE_SRC",
+  //   defaultSymbol: { type: "simple-marker" },
+  //   visualVariables: [{
+  //     type: "color",
+  //     field: "grid-code",
+  //     // stops: [
+  //     //   { value: 7, color: "rgba(255, 255, 255, 0)" },
+  //     //   { value: 8, color: "rgba(255, 255, 255, 1)" },
+  //     //   { value: 9, color: "rgba(255, 140, 0, 1)" },
+  //     //   { value: 10, color: "rgba(255, 140, 0, 1)" },
+  //     //   { value: 12, color: "rgba(255, 0, 0, 1)" }
+  //     // ],
+  //     stops: [
+  //       {value: 5, color: "rgba(255, 185, 80, 0)"},
+  //       {value: 6, color: "rgba(255, 173, 51, 1)"},
+  //       {value: 7, color: "rgba(255, 147, 31, 1)"},
+  //       {value: 8, color: "rgba(255, 126, 51, 1)"},
+  //       {value: 9, color: "rgba(250, 94, 31, 1)"},
+  //       {value: 10, color: "rgba(236, 63, 19, 1)"},
+  //       {value: 11, color: "rgba(184, 23, 2, 1)"},
+  //       {value: 12, color: "rgba(165, 1, 4, 1)"},
+  //       {value: 13, color: "rgba(142, 1, 3, 1)"},
+  //       {value: 14, color: "rgba(122, 1, 3, 1)"},
+  //     ],
 
-    }],
+  //   }],
     
-  }
+  // }
   
   var serverlayer = new FeatureLayer({
         // portalItem: {id: "0c208681a2cc45008fda14d07ac0ae5f"},
         // portalItem: {id: "ff96fad91ace46879bcdf9837cb9f94c"},
         // portalItem: {id: "e9d165e2f02f440d8b1f67fc3e8d51be"},
         // portalItem: {id: "dc2f915b424541a9bf26d097ad5141a8"},
-        portalItem: {id: "729dc331b1424094b73e377536dda7ae"},
+        // portalItem: {id: "729dc331b1424094b73e377536dda7ae"},
         // portalItem: {id: "b87a0d2e0f974f81b0bb8f87b9b23cd0"},
         // portalItem: {id: "b87a0d2e0f974f81b0bb8f87b9b23cd0"},
+
+        portalItem: {
+          id: "b405f0690fbb48a2bd9c779b14e4e445"
+        },
         renderer: renderer,
         // geometry: {
         //   type: "point"
@@ -242,8 +267,11 @@ const buildingsLayer = new SceneLayer({
       },
       attributes: {
         ObjectID: 1,
-        grid_code: 2,
-        pointid: 3,
+        grid_code: 1,
+        pointid: 1,
+        MERGE_SRC: "1",
+        mergeSrc: 1,
+        heat: 1,
       }
     },
    ];
@@ -300,9 +328,21 @@ const buildingsLayer = new SceneLayer({
     },
     {
       name: "grid_code",
-      type:"single"},
+      type: "integer"},
     {
       name: "pointid",
+      type: "integer"
+    },
+    {
+      name: "MERGE_SRC",
+      type: "string"
+    },
+    {
+      name: "mergeSrc",
+      type: "integer"
+    },
+    {
+      name: "heat",
       type: "integer"
     }
   ],
@@ -344,25 +384,23 @@ const buildingsLayer = new SceneLayer({
     let editFeature
     clientlayer.queryFeatures(query).then(function (response) {
       // add value to all points in that area (make hotter)
-      console.log("query spot")
-      console.log(response)
+      // console.log("query spot")
+      // console.log(response)
       let oldSpotFeatures = JSON.parse(JSON.stringify(response.features));
-      console.log(oldSpotFeatures)
+      // console.log(oldSpotFeatures)
       // let editFeature
       for (let j = 0; j < oldSpotFeatures.length; j++) {
         editFeature = response.features[j];
         // console.log(editFeature)
         if (direction == "warmer") {
-          console.log("amount added", (((tempChange / i) - changeTempSoFar)))
-          editFeature.attributes.grid_code = editFeature.attributes.grid_code + ((tempChange / i) - changeTempSoFar)
+          // console.log("amount added", (((tempChange / i) - changeTempSoFar)))
+          editFeature.attributes.heat = editFeature.attributes.heat + ((tempChange / i) - changeTempSoFar)
         } else if (direction == "cooler") {
-          console.log("amount subbed", (((tempChange / i) - changeTempSoFar)))
-          editFeature.attributes.grid_code = editFeature.attributes.grid_code - ((tempChange / i) - changeTempSoFar)
+          // console.log("amount subbed", (((tempChange / i) - changeTempSoFar)))
+          editFeature.attributes.heat = editFeature.attributes.heat - ((tempChange / i) - changeTempSoFar)
         } else {
           console.log("error, invalid direction")
         }
-        
-        
 
         let edits = {
             updateFeatures: [editFeature]
@@ -370,6 +408,7 @@ const buildingsLayer = new SceneLayer({
 
         clientlayer.applyEdits(edits)
             .then(function(result) {
+                console.log("applyEdits success")
                 // console.log("oldpos clientlayer applyEdits success:", result, i);
                 // console.log("added initial pos")
                 // console.log(initialPos)
@@ -383,21 +422,21 @@ const buildingsLayer = new SceneLayer({
   }
 
   const updateTreeSurround = (location, direction) => {
-    console.log("update tree surround")
-    console.log(location)
-    console.log(direction)
-    console.log(numTempBuffers)
-    console.log(tempChange)
+    // console.log("update tree surround")
+    // console.log(location)
+    // console.log(direction)
+    // console.log(numTempBuffers)
+    // console.log(tempChange)
 
     let changeTempSoFar = 0
 
     // let editFeature
 
     for (let i = numTempBuffers; i > 0; i--) {
-      console.log("loop ", i)
-      console.log(direction)
-      console.log(location.geometry.latitude)
-      console.log(location.geometry.longitude)
+      // console.log("loop ", i)
+      // console.log(direction)
+      // console.log(location.geometry.latitude)
+      // console.log(location.geometry.longitude)
       let query = clientlayer.createQuery()
       let point = new Point()
       point.longitude = location.geometry.longitude
@@ -471,9 +510,10 @@ const buildingsLayer = new SceneLayer({
     console.log("adding trees")
     // tree query
     let treeQuery = treeLayer.createQuery();
-    treeQuery.geometry = view.toMap(event);  // the point location of the pointer
-    treeQuery.distance = 10;
-    treeQuery.units = "kilometers";
+    // treeQuery.geometry = view.toMap(event);  // the point location of the pointer
+    treeQuery.geometry = graphicsLayer.graphics.items[0].geometry
+    treeQuery.distance = 100;
+    treeQuery.units = "meters";
     treeQuery.spatialRelationship = "intersects";  // this is the default
     treeQuery.returnGeometry = true;
     // console.log(treeQuery)
@@ -492,6 +532,10 @@ const buildingsLayer = new SceneLayer({
         }
         treeClientLayer.applyEdits(edits).then(() => {
           console.log("then")
+          for (let i = 0; i < response.features.length; i++) {
+            updateTreeSurround(response.features[i], "cooler")
+          }
+          console.log("done")
         })
         console.log(treeClientLayer)
     })
@@ -508,7 +552,7 @@ const buildingsLayer = new SceneLayer({
       let query = serverlayer.createQuery();
       query.geometry = graphicsLayer.graphics.items[0].geometry
       // query.geometry = view.toMap(event);  // the point location of the pointer
-      query.distance = 1000;
+      query.distance = 100;
       query.units = "meters";
       query.spatialRelationship = "intersects";  // this is the default
       query.returnGeometry = true;
@@ -529,6 +573,8 @@ const buildingsLayer = new SceneLayer({
             //   },
             unit: "meters"
           }
+
+        
       })
 
     })
@@ -666,11 +712,11 @@ const buildingsLayer = new SceneLayer({
     })
 
 
-      // view.watch("scale", (scale) => {
-      //   console.log("scale")
-      //   console.log(scale)
-      //   // console.log(view.)
-      // })
+      view.watch("scale", (scale) => {
+        console.log("scale")
+        console.log(scale)
+        // console.log(view.)
+      })
 
     });  
 
