@@ -397,7 +397,13 @@ const buildingsLayer = new SceneLayer({
           editFeature.attributes.heat = editFeature.attributes.heat + ((tempChange / i) - changeTempSoFar)
         } else if (direction == "cooler") {
           // console.log("amount subbed", (((tempChange / i) - changeTempSoFar)))
+          // if (editFeature.attributes.heat - 0.5 > 0) {
+          //   editFeature.attributes.heat = editFeature.attributes.heat - 0.5
+          // } else {
+          //   editFeature.attributes.heat = editFeature.attributes.heat - ((tempChange / i) - changeTempSoFar)
+          // }
           editFeature.attributes.heat = editFeature.attributes.heat - ((tempChange / i) - changeTempSoFar)
+          
         } else {
           console.log("error, invalid direction")
         }
@@ -408,9 +414,9 @@ const buildingsLayer = new SceneLayer({
 
         clientlayer.applyEdits(edits)
             .then(function(result) {
-                // if (j == oldSpotFeatures.length - 1) {
-                //   console.log("applyEdits success")
-                // }
+                if (j == oldSpotFeatures.length - 1) {
+                  // console.log("applyEdits success")
+                }
                 // console.log("applyEdits success")
                 // console.log("oldpos clientlayer applyEdits success:", result, i);
                 // console.log("added initial pos")
@@ -435,7 +441,7 @@ const buildingsLayer = new SceneLayer({
 
     // let editFeature
 
-    for (let i = numTempBuffers; i > 0; i--) {
+    for (let i = 3; i > 0; i--) {
       // console.log("loop ", i)
       // console.log(direction)
       // console.log(location.geometry.latitude)
@@ -445,7 +451,7 @@ const buildingsLayer = new SceneLayer({
       point.longitude = location.geometry.longitude
       point.latitude = location.geometry.latitude
       query.geometry = point
-      query.distance = i
+      query.distance = i * 3
       query.units = "meters"
       query.spatialRelationship = "intersects"
       query.returnGeometry = true
@@ -464,18 +470,18 @@ const buildingsLayer = new SceneLayer({
     let treeType
     if (treeSelect.value == "Populus") {
       console.log("Populus")
-      numTempBuffers = 7
-      tempChange = 4
+      // numTempBuffers = 7
+      // tempChange = 4
       treeType = "Populus"
     } else if (treeSelect.value == "Tilia") {
       console.log("Tilia")
-      numTempBuffers = 5
-      tempChange = 2
+      // numTempBuffers = 5
+      // tempChange = 2
       treeType = "Tilia"
     } else if (treeSelect.value == "Eucalyptus") {
       console.log("Eucalyptus")
-      numTempBuffers = 10
-      tempChange = 5
+      // numTempBuffers = 10
+      // tempChange = 5
       treeType = "Eucalyptus"
     }
     // update renderer
