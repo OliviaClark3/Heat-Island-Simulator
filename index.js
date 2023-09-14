@@ -370,13 +370,13 @@ const buildingsLayer = new SceneLayer({
   // });
   
 
-  let numTempBuffers = 7    // number of radius (or diameter) buffers around tree for temp change
+  let numTempBuffers = 3 //7    // number of radius (or diameter) buffers around tree for temp change
   let tempChange = 4;   // temperature change from middle of tree, used to calculate surrounding temperature change
 
   // document.querySelector("#treeImpactBuffer").value = numTempBuffers
   // document.querySelector("#treeCoolingTemperature").value = tempChange
 
-  document.querySelector("#showBuffer").innerHTML = numTempBuffers
+  document.querySelector("#showBuffer").innerHTML = numTempBuffers * 3
   document.querySelector("#showTemp").innerHTML = tempChange
 
 
@@ -394,7 +394,7 @@ const buildingsLayer = new SceneLayer({
         // console.log(editFeature)
         if (direction == "warmer") {
           // console.log("amount added", (((tempChange / i) - changeTempSoFar)))
-          editFeature.attributes.heat = editFeature.attributes.heat + ((tempChange / i) - changeTempSoFar)
+          editFeature.attributes.heat = editFeature.attributes.heat + ((tempChange / i))// - changeTempSoFar)
         } else if (direction == "cooler") {
           // console.log("amount subbed", (((tempChange / i) - changeTempSoFar)))
           // if (editFeature.attributes.heat - 0.5 > 0) {
@@ -402,7 +402,7 @@ const buildingsLayer = new SceneLayer({
           // } else {
           //   editFeature.attributes.heat = editFeature.attributes.heat - ((tempChange / i) - changeTempSoFar)
           // }
-          editFeature.attributes.heat = editFeature.attributes.heat - ((tempChange / i) - changeTempSoFar)
+          editFeature.attributes.heat = editFeature.attributes.heat - ((tempChange / i))// - changeTempSoFar)
           
         } else {
           console.log("error, invalid direction")
@@ -441,7 +441,7 @@ const buildingsLayer = new SceneLayer({
 
     // let editFeature
 
-    for (let i = 3; i > 0; i--) {
+    for (let i = numTempBuffers; i > 0; i--) {
       // console.log("loop ", i)
       // console.log(direction)
       // console.log(location.geometry.latitude)
@@ -471,7 +471,8 @@ const buildingsLayer = new SceneLayer({
     if (treeSelect.value == "Populus") {
       console.log("Populus")
       // numTempBuffers = 7
-      // tempChange = 4
+      numTempBuffers = 3
+      tempChange = 4
       treeType = "Populus"
     } else if (treeSelect.value == "Tilia") {
       console.log("Tilia")
@@ -481,7 +482,8 @@ const buildingsLayer = new SceneLayer({
     } else if (treeSelect.value == "Eucalyptus") {
       console.log("Eucalyptus")
       // numTempBuffers = 10
-      // tempChange = 5
+      numTempBuffers = 4
+      // tempChange = 4.5
       treeType = "Eucalyptus"
     }
     // update renderer
@@ -492,7 +494,7 @@ const buildingsLayer = new SceneLayer({
       name: treeType
     }
     treeClientLayer.renderer = newRenderer
-    document.querySelector("#showBuffer").innerHTML = numTempBuffers
+    document.querySelector("#showBuffer").innerHTML = numTempBuffers * 3
     document.querySelector("#showTemp").innerHTML = tempChange
   })
 
@@ -520,7 +522,7 @@ const buildingsLayer = new SceneLayer({
     // tree query
     let treeQuery = treeLayer.createQuery();
     // treeQuery.geometry = view.toMap(event);  // the point location of the pointer
-    treeQuery.geometry = graphicsLayer.graphics.items[0].geometry
+    treeQuery.geometry = graphicsLayer.graphics.items[graphicsLayer.graphics.items.length - 1].geometry
     treeQuery.distance = 100;
     treeQuery.units = "meters";
     treeQuery.spatialRelationship = "intersects";  // this is the default
@@ -559,7 +561,7 @@ const buildingsLayer = new SceneLayer({
       console.log("clicked")
       // heat island query
       let query = serverlayer.createQuery();
-      query.geometry = graphicsLayer.graphics.items[0].geometry
+      query.geometry = graphicsLayer.graphics.items[graphicsLayer.graphics.items.length - 1].geometry
       // query.geometry = view.toMap(event);  // the point location of the pointer
       query.distance = 100;
       query.units = "meters";
@@ -701,7 +703,7 @@ const buildingsLayer = new SceneLayer({
           editor.viewModel.featureFormViewModel.watch("feature", (feature) => {
             console.log("feature set")
             console.log(feature)
-            feature.attributes.Tree_H = 7.0
+            feature.attributes.Tree_H = 6.0
             // feature.attributes.Tree_Height = String(feature.attributes.Tree_H)
 
             selectedFeature = feature
