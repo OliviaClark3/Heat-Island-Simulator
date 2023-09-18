@@ -68,7 +68,7 @@ require([
 
   let renderer = {
     type: "heatmap",
-    field: "heat",
+    field: "heatValue",
     // colorStops: [
     //   { ratio: 0, color: "rgba(255, 255, 255, 0)" },
     //   { ratio: 0.2, color: "rgba(255, 255, 255, 1)" },
@@ -142,10 +142,11 @@ require([
       {ratio: 0.88, color: "rgba(142, 1, 3, 1)"},
       {ratio: 1, color: "rgba(122, 1, 3, 1)"},
     ],
-    referenceScale: 250,
-    // // radius: 2.5,
-    // maxDensity: 6,
-    // minDensity: 0,
+    // referenceScale: 250,
+    radius: 11,
+    referenceScale: 5000,
+    maxDensity: 100000,
+    minDensity: 0,
     // elevationInfo: {
     //     mode: "absolute-height",
     //     offset: 50,
@@ -239,7 +240,8 @@ const buildingsLayer = new SceneLayer({
         // portalItem: {id: "b87a0d2e0f974f81b0bb8f87b9b23cd0"},
 
         portalItem: {
-          id: "b405f0690fbb48a2bd9c779b14e4e445"
+          // id: "b405f0690fbb48a2bd9c779b14e4e445"
+          id: "b33dc90b0852403faaf3df62becea06f"
         },
         renderer: renderer,
         // geometry: {
@@ -271,7 +273,8 @@ const buildingsLayer = new SceneLayer({
         pointid: 1,
         MERGE_SRC: "1",
         mergeSrc: 1,
-        heat: 1,
+        heatValue: 1,
+        heatValueSimplified: 1,
       }
     },
    ];
@@ -333,17 +336,21 @@ const buildingsLayer = new SceneLayer({
       name: "pointid",
       type: "integer"
     },
+    // {
+    //   name: "MERGE_SRC",
+    //   type: "string"
+    // },
+    // {
+    //   name: "mergeSrc",
+    //   type: "integer"
+    // },
     {
-      name: "MERGE_SRC",
-      type: "string"
-    },
-    {
-      name: "mergeSrc",
+      name: "heatValue",
       type: "integer"
     },
     {
-      name: "heat",
-      type: "integer"
+      name: "heatValueSimplified",
+      type: "single"
     }
   ],
   objectIfField: "OBJECTID",
@@ -377,7 +384,7 @@ const buildingsLayer = new SceneLayer({
   // document.querySelector("#treeCoolingTemperature").value = tempChange
 
   document.querySelector("#showBuffer").innerHTML = numTempBuffers * 3
-  document.querySelector("#showTemp").innerHTML = tempChange
+  // document.querySelector("#showTemp").innerHTML = tempChange
 
 
   const updateTreeSurroundExecuteQuery = (query, direction, i, changeTempSoFar) => {
@@ -394,7 +401,7 @@ const buildingsLayer = new SceneLayer({
         // console.log(editFeature)
         if (direction == "warmer") {
           // console.log("amount added", (((tempChange / i) - changeTempSoFar)))
-          editFeature.attributes.heat = editFeature.attributes.heat + ((tempChange / i))// - changeTempSoFar)
+          editFeature.attributes.heatValue = editFeature.attributes.heatValue + ((tempChange / i) * 300000)// - changeTempSoFar)
         } else if (direction == "cooler") {
           // console.log("amount subbed", (((tempChange / i) - changeTempSoFar)))
           // if (editFeature.attributes.heat - 0.5 > 0) {
@@ -402,7 +409,7 @@ const buildingsLayer = new SceneLayer({
           // } else {
           //   editFeature.attributes.heat = editFeature.attributes.heat - ((tempChange / i) - changeTempSoFar)
           // }
-          editFeature.attributes.heat = editFeature.attributes.heat - ((tempChange / i))// - changeTempSoFar)
+          editFeature.attributes.heatValue = editFeature.attributes.heatValue - ((tempChange / i) * 300000)// - changeTempSoFar)
           
         } else {
           console.log("error, invalid direction")
@@ -482,8 +489,8 @@ const buildingsLayer = new SceneLayer({
     } else if (treeSelect.value == "Eucalyptus") {
       console.log("Eucalyptus")
       // numTempBuffers = 10
-      numTempBuffers = 4
-      // tempChange = 4.5
+      numTempBuffers = 5
+      tempChange = 5
       treeType = "Eucalyptus"
     }
     // update renderer
@@ -495,7 +502,7 @@ const buildingsLayer = new SceneLayer({
     }
     treeClientLayer.renderer = newRenderer
     document.querySelector("#showBuffer").innerHTML = numTempBuffers * 3
-    document.querySelector("#showTemp").innerHTML = tempChange
+    // document.querySelector("#showTemp").innerHTML = tempChange
   })
 
 
@@ -544,7 +551,7 @@ const buildingsLayer = new SceneLayer({
         treeClientLayer.applyEdits(edits).then(() => {
           console.log("then")
           for (let i = 0; i < response.features.length; i++) {
-            updateTreeSurround(response.features[i], "cooler")
+            // updateTreeSurround(response.features[i], "cooler")
           }
           console.log("done")
         })
