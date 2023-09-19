@@ -17,8 +17,9 @@ require([
     "esri/layers/SceneLayer",
     "esri/widgets/Sketch",
     "esri/layers/GraphicsLayer",
-    "esri/smartMapping/renderers/heatmap"
-  ], (Map, SceneView, FeatureLayer, WebStyleSymbol, Editor, reactiveUtils, Edits, UpdateWorkflow, Point, SketchViewModel, esriLang, esriConfig, WebScene, SceneLayer, Sketch, GraphicsLayer, heatmapRendererCreator) => {
+    "esri/smartMapping/renderers/heatmap",
+    "esri/widgets/Legend"
+  ], (Map, SceneView, FeatureLayer, WebStyleSymbol, Editor, reactiveUtils, Edits, UpdateWorkflow, Point, SketchViewModel, esriLang, esriConfig, WebScene, SceneLayer, Sketch, GraphicsLayer, heatmapRendererCreator, Legend) => {
 
     const graphicsLayer = new GraphicsLayer({
       elevationInfo: {
@@ -163,7 +164,7 @@ require([
     type: "simple",  // autocasts as new SimpleRenderer()
     symbol: {
       type: "web-style",  // autocasts as new WebStyleSymbol()
-      styleName: "EsriRealisticTreesStyle",
+      styleName: "EsriLowPolyVegetationStyle",
       name: "Populus"
     },
     label: "generic tree",
@@ -179,8 +180,9 @@ require([
 const buildingsLayer = new SceneLayer({
     portalItem: {
       id: "ca0470dbbddb4db28bad74ed39949e25"
+      // id: "e0e273a62e724dbbba2618af9fe57fcf"
     },
-    popupEnabled: false
+    popupEnabled: false,
   });
   map.add(buildingsLayer);
 
@@ -497,7 +499,7 @@ const buildingsLayer = new SceneLayer({
     let newRenderer = treeClientLayer.renderer.clone()
     newRenderer.symbol = {
       type: "web-style",  // autocasts as new WebStyleSymbol()
-      styleName: "EsriRealisticTreesStyle",
+      styleName: "EsriLowPolyVegetationStyle",
       name: treeType
     }
     treeClientLayer.renderer = newRenderer
@@ -638,7 +640,7 @@ const buildingsLayer = new SceneLayer({
       });
       // Add widget to top-right of the view
       view.ui.add(editor, "top-right");
-      console.log(editor.viewModel.featureTemplatesViewModel.layers)
+      // console.log(editor.viewModel.featureTemplatesViewModel.layers)
 
       const sketch = new Sketch({
         view: view,
@@ -653,7 +655,13 @@ const buildingsLayer = new SceneLayer({
 
       console.log("editor")
       console.log(editor)
-      console.log(editor.viewModel.featureTemplatesViewModel.items)
+      console.log(editor.viewModel.editableItems.items)
+
+      // editor.container.watch("load", (event) => {
+      //   console.log("editor loaded")
+      //   console.log(editor)
+      // })
+
       console.log("sketch")
       console.log(sketch)
 
@@ -662,6 +670,14 @@ const buildingsLayer = new SceneLayer({
         console.log(event)
         console.log(graphicsLayer)
       })
+
+      let legend = new Legend({
+        view: view,
+      })
+      view.ui.add(legend, "bottom-left")
+      console.log("legend")
+      console.log(legend)
+      // legend.container.innerHTML = "<div><div class=\"esri-legend__service\" tabindex=\"0\"><div class=\"esri-legend__layer\"><div class=\"esri-legend__layer-table esri-legend__layer-table--size-ramp\"><div class=\"esri-legend__layer-caption\">heatValue</div><div class=\"esri-legend__layer-row\"><div class=\"esri-legend__layer-cell esri-legend__layer-cell--symbols\" style=\"width: 24px;\"><div class=\"esri-legend__ramps\"><div class=\"esri-legend__color-ramp \" style=\"width: 24px; height: 75px; opacity: 1;\"><canvas width=\"24\" height=\"75\" style=\"width: 24px; height: 75px;\"></canvas></div></div></div><div class=\"esri-legend__layer-cell esri-legend__layer-cell--info\"><div class=\"esri-legend__ramp-labels\" style=\"height: 75px;\"><div class=\"esri-legend__ramp-label\">High</div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div class=\"esri-legend__ramp-label\">Low</div></div></div></div></div></div></div></div>"
 
 
       // preset variables for selecting update feature
