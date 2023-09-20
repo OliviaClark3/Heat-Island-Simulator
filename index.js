@@ -176,15 +176,49 @@ require([
     }]
   };
 
+ 
+// Create the renderer and configure visual variables
+const buildingRenderer = {
+  type: "simple", // autocasts as new SimpleRenderer()
+  // Add a default MeshSymbol3D. The color will be determined
+  // by the visual variables
+  symbol: {
+    type: "mesh-3d",
+    symbolLayers: [
+      {
+        type: "fill",
+        material: {
+          color: "#ffffff",
+          colorMixMode: "replace"
+        },
+        edges: {
+          type: "sketch",
+          color: [0, 0, 0, 0.6],
+          size: 1.5
+        }
+      }
+    ]
+  },
+};
 
-const buildingsLayer = new SceneLayer({
+  const buildingsLayer = new SceneLayer({
     portalItem: {
-      id: "ca0470dbbddb4db28bad74ed39949e25"
-      // id: "e0e273a62e724dbbba2618af9fe57fcf"
+      // id: "ca0470dbbddb4db28bad74ed39949e25"
+      id: "8846020245b340d5b8f8e13f98d65c70"
     },
     popupEnabled: false,
+    renderer: buildingRenderer
   });
   map.add(buildingsLayer);
+
+  const extraBuildingLayer = new SceneLayer({
+    portalItem: {
+      id:"8b9e48633ef1417e8e5200f2fb3ce872"
+    },
+    popupEnabled: false,
+    renderer: buildingRenderer
+  })
+  map.add(extraBuildingLayer)
 
   // add trees
   var treeLayer = new FeatureLayer({
@@ -671,12 +705,12 @@ const buildingsLayer = new SceneLayer({
         console.log(graphicsLayer)
       })
 
-      let legend = new Legend({
-        view: view,
-      })
-      view.ui.add(legend, "bottom-left")
-      console.log("legend")
-      console.log(legend)
+      // let legend = new Legend({
+      //   view: view,
+      // })
+      // view.ui.add(legend, "bottom-left")
+      // console.log("legend")
+      // console.log(legend)
       // legend.container.innerHTML = "<div><div class=\"esri-legend__service\" tabindex=\"0\"><div class=\"esri-legend__layer\"><div class=\"esri-legend__layer-table esri-legend__layer-table--size-ramp\"><div class=\"esri-legend__layer-caption\">heatValue</div><div class=\"esri-legend__layer-row\"><div class=\"esri-legend__layer-cell esri-legend__layer-cell--symbols\" style=\"width: 24px;\"><div class=\"esri-legend__ramps\"><div class=\"esri-legend__color-ramp \" style=\"width: 24px; height: 75px; opacity: 1;\"><canvas width=\"24\" height=\"75\" style=\"width: 24px; height: 75px;\"></canvas></div></div></div><div class=\"esri-legend__layer-cell esri-legend__layer-cell--info\"><div class=\"esri-legend__ramp-labels\" style=\"height: 75px;\"><div class=\"esri-legend__ramp-label\">High</div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div class=\"esri-legend__ramp-label\">Low</div></div></div></div></div></div></div></div>"
 
 
