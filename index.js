@@ -192,7 +192,7 @@ const buildingRenderer = {
           colorMixMode: "replace"
         },
         edges: {
-          type: "sketch",
+          type: "solid",
           color: [0, 0, 0, 0.6],
           size: 1.5
         }
