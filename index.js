@@ -359,7 +359,6 @@ const buildingRenderer = {
 
   var clientlayer =  new FeatureLayer({
     source: heatIslandfeatures,
-    // portalItem: {id: "3ca3220e1e894b8cb80c4dbab9ecbe7c"},
     objectIdField: "OBJECTID",
     fields: [{
       name: "OBJECTID",
@@ -372,14 +371,6 @@ const buildingRenderer = {
       name: "pointid",
       type: "integer"
     },
-    // {
-    //   name: "MERGE_SRC",
-    //   type: "string"
-    // },
-    // {
-    //   name: "mergeSrc",
-    //   type: "integer"
-    // },
     {
       name: "heatValue",
       type: "integer"
@@ -393,9 +384,6 @@ const buildingRenderer = {
   elevationInfo: {
     mode: "absolute-height",
     offset: 50,
-    // featureExpressionInfo: {
-    //     expression: "Geometry($feature).z * 10"
-    //   },
     unit: "meters"
   },
   renderer: renderer
@@ -558,6 +546,26 @@ const buildingRenderer = {
   //   document.querySelector("#showTemp").innerHTML = tempChange
   // })
 
+
+  //  --------------   SUBMIT BUTTON CODE HERE -------------------------
+  // let submitBtn = document.querySelector("#submitChanges")
+  // submitBtn.addEventListener("click", (event) => {
+  //   let query = serverlayer.createQuery();
+  //   query.geometry = graphicsLayer.graphics.items[graphicsLayer.graphics.items.length - 1].geometry
+  //   query.distance = 100;
+  //   query.units = "meters";
+  //   query.spatialRelationship = "intersects";  // this is the default
+  //   query.returnGeometry = true;
+  //   query.maxRecordCountFactor = 5
+  //   serverlayer.queryFeatures(query)
+  //   .then(function(response) {
+  //     const edits = {
+  //         updateFeatures: response.features
+  //     }
+  //     clientlayer.applyEdits(edits)
+      
+  //   })
+  // })
     
   let treeBtn = document.querySelector("#addTrees")
   treeBtn.addEventListener("click", (event) => {
