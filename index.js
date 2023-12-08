@@ -1,47 +1,26 @@
-// display with only trees added
-
 require([
   "esri/Map",
   "esri/views/SceneView",
   "esri/layers/FeatureLayer",
-  "esri/symbols/WebStyleSymbol",
   "esri/widgets/Editor",
-  "esri/core/reactiveUtils",
-  "esri/widgets/Editor/Edits",
-  "esri/widgets/Editor/UpdateWorkflow",
   "esri/geometry/Point",
-  "esri/widgets/Sketch/SketchViewModel",
   "esri/core/lang",
-  "esri/config",
-  "esri/WebScene",
   "esri/layers/SceneLayer",
   "esri/widgets/Sketch",
   "esri/layers/GraphicsLayer",
-  "esri/smartMapping/renderers/heatmap",
-  "esri/widgets/Legend",
 ], (
   Map,
   SceneView,
   FeatureLayer,
-  WebStyleSymbol,
   Editor,
-  reactiveUtils,
-  Edits,
-  UpdateWorkflow,
   Point,
-  SketchViewModel,
   esriLang,
-  esriConfig,
-  WebScene,
   SceneLayer,
   Sketch,
-  GraphicsLayer,
-  heatmapRendererCreator,
-  Legend
+  GraphicsLayer
 ) => {
 
-  let addedHeatPoints = []
-
+  // layer for sketch points
   const graphicsLayer = new GraphicsLayer({
     elevationInfo: {
       mode: "on-the-ground",
@@ -69,6 +48,7 @@ require([
     },
   });
 
+  // heat island points renderer, for heatmap
   let renderer = {
     type: "heatmap",
     field: "heatValue",
@@ -93,8 +73,6 @@ require([
     minDensity: 0,
   };
 
-  // let treeType = "Populus"
-
   const treeRenderer = {
     type: "simple", // autocasts as new SimpleRenderer()
     symbol: {
@@ -113,11 +91,10 @@ require([
     ],
   };
 
-  // Create the renderer and configure visual variables
+  // osn buildings renderer
   const buildingRenderer = {
     type: "simple", // autocasts as new SimpleRenderer()
-    // Add a default MeshSymbol3D. The color will be determined
-    // by the visual variables
+    // Add a default MeshSymbol3D. The color will be determined by the visual variables
     symbol: {
       type: "mesh-3d",
       symbolLayers: [
@@ -137,9 +114,9 @@ require([
     },
   };
 
+  // initiallly displayed buildings, from OSM data, not editable
   const buildingsLayer = new SceneLayer({
     portalItem: {
-      // id: "ca0470dbbddb4db28bad74ed39949e25"
       id: "8846020245b340d5b8f8e13f98d65c70",
     },
     popupEnabled: false,
@@ -147,6 +124,7 @@ require([
   });
   map.add(buildingsLayer);
 
+  // additional building that was not displaying correctly, for conference presentation purposes
   const extraBuildingLayer = new SceneLayer({
     portalItem: {
       id: "8b9e48633ef1417e8e5200f2fb3ce872",
@@ -156,11 +134,9 @@ require([
   });
   map.add(extraBuildingLayer);
 
-  // add trees
+  // initially displayed trees, editable
   var treeLayer = new FeatureLayer({
     portalItem: {
-      // id: "04be9f93876e48fab0b341b213a2c452"
-      // id: "fd184dff273c497ea15df63f3e56c40f"
       id: "72c9f18c98f047a2815972b9b1628a84",
     },
     // url: "https://services.arcgis.com/hLRlshaEMEYQG5A8/arcgis/rest/services/HamiltonTreesWithRemovedFeatures/FeatureServer",
@@ -170,6 +146,7 @@ require([
     },
   });
 
+  // heat island point data
   var serverlayer = new FeatureLayer({
     portalItem: {
       id: "b33dc90b0852403faaf3df62becea06f",
@@ -181,9 +158,8 @@ require([
       unit: "meters",
     },
   });
-  // view.map.add(serverlayer)
 
-  // create a feature map with polygons for initialising building layer
+  // initial building feature to initialaise building client layer
   let buildingfeatures = [
     // needs one dummy point
     {
@@ -199,7 +175,7 @@ require([
     },
   ];
 
-  // create a client layer to store updated building data
+  // building layer for buildings created with the editor
   var buildingclientlayer = new FeatureLayer({
     title: "Add Buildings",
     source: buildingfeatures,
@@ -214,7 +190,6 @@ require([
         type: "single",
       },
     ],
-    // renderer: buildingRenderer,
     renderer: {
       type: "simple", // autocasts as new UniqueValueRenderer()
       symbol: {
@@ -245,9 +220,9 @@ require([
       offset: 0,
     },
   });
-
   view.map.add(buildingclientlayer);
 
+  // initial building feature to initialaise heat island points client layer
   let heatIslandfeatures = [
     {
       geometry: {
@@ -268,6 +243,7 @@ require([
     },
   ];
 
+  // initial building feature to initialaise tree client layer
   let treeFeatures = [
     {
       geometry: {
@@ -310,6 +286,7 @@ require([
   });
   view.map.add(treeClientLayer);
 
+  // client layer for heat island point data
   var clientlayer = new FeatureLayer({
     source: heatIslandfeatures,
     objectIdField: "OBJECTID",
@@ -347,10 +324,9 @@ require([
 
   let numTempBuffers = 3; //7    // number of radius (or diameter) buffers around tree for temp change
   let tempChange = 4; // temperature change from middle of tree, used to calculate surrounding temperature change
-
   document.querySelector("#showBuffer").innerHTML = numTempBuffers * 3;
   // document.querySelector("#showTemp").innerHTML = tempChange
-
+  // query heat island points around trees to change based on tree movement/addition
   const updateTreeSurroundExecuteQuery = (
     query,
     direction,
@@ -373,11 +349,9 @@ require([
         } else {
           console.log("error, invalid direction");
         }
-
         let edits = {
           updateFeatures: [editFeature],
         };
-
         clientlayer
           .applyEdits(edits)
           .then(function (result) {
@@ -386,17 +360,15 @@ require([
             }
           })
           .catch(function (error) {
-            // console.error("oldpos clientlayer applyEdits error:", error, i);
+            // console.error("applyEdits error:", error, i);
           });
       }
     });
   };
 
+  // update the area around the tree when it is added or moved, based on tree type
   const updateTreeSurround = (location, direction) => {
     let changeTempSoFar = 0;
-
-    // let editFeature
-
     for (let i = numTempBuffers; i > 0; i--) {
       let query = clientlayer.createQuery();
       let point = new Point();
@@ -407,29 +379,26 @@ require([
       query.units = "meters";
       query.spatialRelationship = "intersects";
       query.returnGeometry = true;
-
       updateTreeSurroundExecuteQuery(query, direction, i, changeTempSoFar);
-
       changeTempSoFar = tempChange / i;
     }
   };
 
+  // handle changing tree type
+  // find more tree types here: https://developers.arcgis.com/javascript/latest/visualization/symbols-color-ramps/esri-web-style-symbols-3d/#low-poly-vegetation
   let treeSelect = document.getElementById("selectTree");
   treeSelect.addEventListener("change", (event) => {
     let treeType;
     if (treeSelect.value == "Populus") {
-      console.log("Populus");
       // numTempBuffers = 7
       numTempBuffers = 3;
       tempChange = 4;
       treeType = "Populus";
     } else if (treeSelect.value == "Tilia") {
-      console.log("Tilia");
       numTempBuffers = 5;
       // tempChange = 2
       treeType = "Tilia";
     } else if (treeSelect.value == "Eucalyptus") {
-      console.log("Eucalyptus");
       // numTempBuffers = 10
       numTempBuffers = 7;
       tempChange = 5;
@@ -447,7 +416,8 @@ require([
     // document.querySelector("#showTemp").innerHTML = tempChange
   });
 
-  //  --------------   SUBMIT BUTTON CODE HERE -------------------------
+  //  --------------   SUBMIT BUTTON CODE STARTS HERE -------------------------
+  // // this is code to implement the functionality for the Submit Changes button
   // let submitBtn = document.querySelector("#submitChanges")
   // submitBtn.addEventListener("click", (event) => {
   //   let query = serverlayer.createQuery();
@@ -466,13 +436,13 @@ require([
 
   //   })
   // })
+  //  --------------   SUBMIT BUTTON CODE ENDS HERE -------------------------
 
+  // query area around sketch point when Add Trees button clicked
   let treeBtn = document.querySelector("#addTrees");
   treeBtn.addEventListener("click", (event) => {
-    console.log("adding trees");
     // tree query
     let treeQuery = treeLayer.createQuery();
-    // treeQuery.geometry = view.toMap(event);  // the point location of the pointer
     treeQuery.geometry =
       graphicsLayer.graphics.items[
         graphicsLayer.graphics.items.length - 1
@@ -482,68 +452,52 @@ require([
     treeQuery.spatialRelationship = "intersects"; // this is the default
     treeQuery.returnGeometry = true;
     treeLayer.queryFeatures(treeQuery).then(function (response) {
-      console.log(response);
       const edits = {
         addFeatures: response.features,
       };
       treeClientLayer.applyEdits(edits).then(() => {
-        console.log("then");
         for (let i = 0; i < response.features.length; i++) {
           // updateTreeSurround(response.features[i], "cooler")
         }
-        console.log("done");
       });
-      console.log(treeClientLayer);
     });
   });
 
+  // query area around sketch point when Query Area button clicked
   let dataBtn = document.querySelector("#getData");
-
   dataBtn.addEventListener("click", (event) => {
-    console.log("clicked");
-
     // heat island query
     let query = serverlayer.createQuery();
     query.geometry =
       graphicsLayer.graphics.items[
         graphicsLayer.graphics.items.length - 1
       ].geometry;
-    // query.geometry = view.toMap(event);  // the point location of the pointer
     query.distance = 50;
     query.units = "meters";
     query.spatialRelationship = "intersects"; // this is the default
     query.returnGeometry = true;
     query.maxRecordCountFactor = 5;
-    // query.where =
-    // console.log(query)
     serverlayer.queryFeatures(query).then(function (response) {
       const edits = {
         addFeatures: response.features,
       };
-      console.log(edits)
       clientlayer.applyEdits(edits);
-      console.log(clientlayer);
       clientlayer.elevationInfo = {
         mode: "absolute-height",
         offset: 50,
-        // featureExpressionInfo: {
-        //     expression: "Geometry($feature).z * 10"
-        //   },
         unit: "meters",
       };
     });
   });
 
   view.when(() => {
-    console.log("view when");
     view.popupEnabled = false; //disable popups
-    // Create the Editor
+    // create the Editor
     const editor = new Editor({
       view: view,
     });
-    // Add widget to top-right of the view
+    // add widget to top-right of the view
     view.ui.add(editor, "top-right");
-    // console.log(editor.viewModel.featureTemplatesViewModel.layers)
 
     const sketch = new Sketch({
       view: view,
@@ -555,101 +509,42 @@ require([
     });
     view.ui.add(sketch, "bottom-right");
 
-    console.log("editor");
-    console.log(editor);
-    console.log(editor.viewModel.editableItems.items);
-
-    // editor.container.watch("load", (event) => {
-    //   console.log("editor loaded")
-    //   console.log(editor)
-    // })
-
-    console.log("sketch");
-    console.log(sketch);
-
     sketch.on("create", (event) => {
-      console.log("created");
-      console.log(event);
-      console.log(graphicsLayer);
+      // if you wanted to query the trees and heat island data immediately upon placing the sketch point,
+      // code could be added here
     });
 
-    // let legend = new Legend({
-    //   view: view,
-    // })
-    // view.ui.add(legend, "bottom-left")
-    // console.log("legend")
-    // console.log(legend)
-    // legend.container.innerHTML = "<div><div class=\"esri-legend__service\" tabindex=\"0\"><div class=\"esri-legend__layer\"><div class=\"esri-legend__layer-table esri-legend__layer-table--size-ramp\"><div class=\"esri-legend__layer-caption\">heatValue</div><div class=\"esri-legend__layer-row\"><div class=\"esri-legend__layer-cell esri-legend__layer-cell--symbols\" style=\"width: 24px;\"><div class=\"esri-legend__ramps\"><div class=\"esri-legend__color-ramp \" style=\"width: 24px; height: 75px; opacity: 1;\"><canvas width=\"24\" height=\"75\" style=\"width: 24px; height: 75px;\"></canvas></div></div></div><div class=\"esri-legend__layer-cell esri-legend__layer-cell--info\"><div class=\"esri-legend__ramp-labels\" style=\"height: 75px;\"><div class=\"esri-legend__ramp-label\">High</div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div class=\"esri-legend__ramp-label\">Low</div></div></div></div></div></div></div></div>"
-
-    // preset variables for selecting update feature
-    // let prevState = null
-    // let currState = "ready"
     let selectedFeature = null;
     let selectedFeatureCopy = null;
-
     // watch for state change of editor
     editor.viewModel.watch("state", (state) => {
-      console.log("state");
-      console.log(editor);
-      console.log(state);
-
-      if (state == "awaiting-update-feature-candidate") {
-        console.log("awaiting candidate");
-        console.log(editor);
-      }
-
       if (state == "editing-existing-feature") {
-        // currently editing tree position
-
-        // if (state != "awaiting-feature-to-update")
-        console.log("editing existing");
-        console.log(editor);
-        // prevState = currState
-        // currState = state
         selectedFeature = editor.viewModel.featureFormViewModel.feature;
+        // only if tree layer selected
         if (selectedFeature.layer.title == "Add Trees") {
           selectedFeatureCopy = esriLang.clone(
             editor.viewModel.featureFormViewModel.feature
           );
-
           editor.activeWorkflow.on("commit", () => {
-            console.log("update heat island");
             updateTreeSurround(selectedFeatureCopy, "warmer");
             updateTreeSurround(selectedFeature, "cooler");
           });
         }
       } else if (state == "creating-features") {
-        console.log("new tree");
-        console.log(editor);
-        // editor.viewModel.SketchViewModel.createGraphic.symbolLayers[0].height = 7
-        // prevState = currState
-        // currState = state
+        // only if tree layer selected
         if (editor.viewModel.selectedTemplateItem.layer.title == "Add Trees") {
           selectedFeature = null;
           selectedFeatureCopy = null;
-          console.log(editor.activeWorkflow.createFeatureState);
           editor.viewModel.featureFormViewModel.watch("feature", (feature) => {
-            console.log("feature set");
-            console.log(feature);
             feature.attributes.Tree_H = 6.0;
-            // feature.attributes.Tree_Height = String(feature.attributes.Tree_H)
-
             selectedFeature = feature;
             selectedFeatureCopy = esriLang.clone(feature);
           });
           editor.activeWorkflow.on("commit", (f) => {
-            console.log("commit");
-            // console.log(f)
             updateTreeSurround(selectedFeature, "cooler");
           });
         }
       }
     });
-
-    // view.watch("scale", (scale) => {
-    //   console.log("scale")
-    //   console.log(scale)
-    //   // console.log(view.)
-    // })
   });
 });
