@@ -8,6 +8,8 @@ require([
   "esri/layers/SceneLayer",
   "esri/widgets/Sketch",
   "esri/layers/GraphicsLayer",
+  "esri/widgets/TimeSlider",
+  "constants.js"  // Add path to your constants module
 ], (
   Map,
   SceneView,
@@ -17,9 +19,10 @@ require([
   esriLang,
   SceneLayer,
   Sketch,
-  GraphicsLayer
+  GraphicsLayer,
+  TimeSlider,
+  constants
 ) => {
-
   // layer for sketch points
   const graphicsLayer = new GraphicsLayer({
     elevationInfo: {
@@ -322,67 +325,83 @@ require([
   });
   view.map.add(clientlayer);
 
-  let numTempBuffers = 3; //7    // number of radius (or diameter) buffers around tree for temp change
-  let tempChange = 4; // temperature change from middle of tree, used to calculate surrounding temperature change
-  document.querySelector("#showBuffer").innerHTML = numTempBuffers * 3;
-  // document.querySelector("#showTemp").innerHTML = tempChange
+
+  let effectRadius = constants.StartingRadius;
+  let temperatureChange = constants.StartingCoolingTemperature;
+  updateInfoBoard(effectRadius * constants.Amplifier, temperatureChange)
+
   // query heat island points around trees to change based on tree movement/addition
-  const updateTreeSurroundExecuteQuery = (
+
+
+  function updateHeatIndex(
     query,
-    direction,
-    i,
-    changeTempSoFar
-  ) => {
+    actionType,
+    currentRingRadius,
+  ) {
     let editFeature;
     clientlayer.queryFeatures(query).then(function (response) {
       // add value to all points in that area (make hotter)
-      let oldSpotFeatures = JSON.parse(JSON.stringify(response.features));
-      // let editFeature
-      for (let j = 0; j < oldSpotFeatures.length; j++) {
-        editFeature = response.features[j];
-        if (direction == "warmer") {
+
+      response.features.forEach((feature) => {
+        editFeature = feature;
+        if (actionType == "warmer") {
           editFeature.attributes.heatValue =
-            editFeature.attributes.heatValue + (tempChange / i) * 300000; // - changeTempSoFar)
-        } else if (direction == "cooler") {
+            editFeature.attributes.heatValue + (temperatureChange / currentRingRadius) * 300000;
+        } else if (actionType == "cooler") {
           editFeature.attributes.heatValue =
-            editFeature.attributes.heatValue - (tempChange / i) * 300000; // - changeTempSoFar)
+            editFeature.attributes.heatValue - (temperatureChange / currentRingRadius) * 300000;
         } else {
-          console.log("error, invalid direction");
+          console.log("error, invalid actionType");
         }
         let edits = {
           updateFeatures: [editFeature],
         };
         clientlayer
           .applyEdits(edits)
-          .then(function (result) {
-            if (j == oldSpotFeatures.length - 1) {
-              // console.log("applyEdits success")
-            }
-          })
-          .catch(function (error) {
-            // console.error("applyEdits error:", error, i);
-          });
-      }
+        // .then(function (result) {
+        //   if (j == response.features.length - 1) {
+        //     // console.log("applyEdits success")
+        //   }
+        // })
+        // .catch(function (error) {
+        //   // console.error("applyEdits error:", error, i);
+        // });
+
+      })
+
     });
   };
 
   // update the area around the tree when it is added or moved, based on tree type
-  const updateTreeSurround = (location, direction) => {
-    let changeTempSoFar = 0;
-    for (let i = numTempBuffers; i > 0; i--) {
+  function createHeatUpdateQuery(featureLocation, actionType) {
+    for (let i = effectRadius; i > 0; i--) {
       let query = clientlayer.createQuery();
-      let point = new Point();
-      point.longitude = location.geometry.longitude;
-      point.latitude = location.geometry.latitude;
-      query.geometry = point;
-      query.distance = i * 3;
+      let queryLocationPoint = new Point();
+      if (featureLocation.geometry.type == "polygon") {
+        // 2024/May Edw as POC, this should ideally get the extent or rings and do accurate query
+        queryLocationPoint.longitude = featureLocation.geometry.centroid.longitude;
+        queryLocationPoint.latitude = featureLocation.geometry.centroid.latitude
+      }
+      else if (featureLocation.geometry.type == "point") {
+        queryLocationPoint.longitude = featureLocation.geometry.longitude;
+        queryLocationPoint.latitude = featureLocation.geometry.latitude;
+      }
+      else {
+        console.warn('Invalid geometry to query')
+      }
+
+      query.geometry = queryLocationPoint;
+      query.distance = i * constants.Amplifier;
       query.units = "meters";
       query.spatialRelationship = "intersects";
       query.returnGeometry = true;
-      updateTreeSurroundExecuteQuery(query, direction, i, changeTempSoFar);
-      changeTempSoFar = tempChange / i;
+      updateHeatIndex(query, actionType, i);
     }
   };
+  function updateInfoBoard(affectedArea = null, coolingTemperature = null) {
+    if (!!affectedArea) document.querySelector("#showBuffer").innerHTML = affectedArea;
+    if (!!coolingTemperature) document.querySelector("#showTemp").innerHTML = coolingTemperature
+  }
 
   // handle changing tree type
   // find more tree types here: https://developers.arcgis.com/javascript/latest/visualization/symbols-color-ramps/esri-web-style-symbols-3d/#low-poly-vegetation
@@ -390,18 +409,18 @@ require([
   treeSelect.addEventListener("change", (event) => {
     let treeType;
     if (treeSelect.value == "Populus") {
-      // numTempBuffers = 7
-      numTempBuffers = 3;
-      tempChange = 4;
+      // effectRadius = 7
+      effectRadius = 3;
+      temperatureChange = 4;
       treeType = "Populus";
     } else if (treeSelect.value == "Tilia") {
-      numTempBuffers = 5;
-      // tempChange = 2
+      effectRadius = 5;
+      // temperatureChange = 2
       treeType = "Tilia";
     } else if (treeSelect.value == "Eucalyptus") {
-      // numTempBuffers = 10
-      numTempBuffers = 7;
-      tempChange = 5;
+      // effectRadius = 10
+      effectRadius = 7;
+      temperatureChange = 5;
       treeType = "Eucalyptus";
     }
     // update renderer
@@ -412,8 +431,8 @@ require([
       name: treeType,
     };
     treeClientLayer.renderer = newRenderer;
-    document.querySelector("#showBuffer").innerHTML = numTempBuffers * 3;
-    // document.querySelector("#showTemp").innerHTML = tempChange
+    document.querySelector("#showBuffer").innerHTML = effectRadius * 3;
+    document.querySelector("#showTemp").innerHTML = temperatureChange
   });
 
   //  --------------   SUBMIT BUTTON CODE STARTS HERE -------------------------
@@ -457,7 +476,7 @@ require([
       };
       treeClientLayer.applyEdits(edits).then(() => {
         for (let i = 0; i < response.features.length; i++) {
-          // updateTreeSurround(response.features[i], "cooler")
+          // createHeatUpdateQuery(response.features[i], "cooler")
         }
       });
     });
@@ -526,8 +545,8 @@ require([
             editor.viewModel.featureFormViewModel.feature
           );
           editor.activeWorkflow.on("commit", () => {
-            updateTreeSurround(selectedFeatureCopy, "warmer");
-            updateTreeSurround(selectedFeature, "cooler");
+            createHeatUpdateQuery(selectedFeatureCopy, "warmer");
+            createHeatUpdateQuery(selectedFeature, "cooler");
           });
         }
       } else if (state == "creating-features") {
@@ -541,7 +560,21 @@ require([
             selectedFeatureCopy = esriLang.clone(feature);
           });
           editor.activeWorkflow.on("commit", (f) => {
-            updateTreeSurround(selectedFeature, "cooler");
+            console.warn(999, 'tree', selectedFeature)
+            createHeatUpdateQuery(selectedFeature, "cooler");
+          });
+        }
+        if (editor.viewModel.selectedTemplateItem.layer.title == "Add Buildings") {
+          selectedFeature = null;
+          selectedFeatureCopy = null;
+          editor.viewModel.featureFormViewModel.watch("feature", (feature) => {
+            feature.attributes.height = 5.0;
+            selectedFeature = feature;
+            selectedFeatureCopy = esriLang.clone(feature);
+          });
+          editor.activeWorkflow.on("commit", (f) => {
+            console.warn(999, 'build', selectedFeature)
+            createHeatUpdateQuery(selectedFeature, "warmer");
           });
         }
       }
